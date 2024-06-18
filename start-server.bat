@@ -1,0 +1,6 @@
+@echo off
+echo Iniciando o servidor...
+start "" "C:\Program Files\nodejs\node.exe" "C:\Users\FOTODEMARCA\Desktop\meu-conversor-de-imagens\server.js"
+timeout /t 5 >nul
+echo Abrindo o navegador...
+start "" "http://localhost:3000"

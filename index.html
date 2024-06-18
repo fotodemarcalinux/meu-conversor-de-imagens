@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Image Converter and Watermark</title>
+  <link rel="stylesheet" type="text/css" href="style.css">
+</head>
+<body>
+  <div class="container">
+    <img src="logo.png" alt="Logo da Empresa" class="logo">
+    <h1>Upload Images</h1>
+    <form action="/upload" method="post" enctype="multipart/form-data">
+      <input type="file" name="images" multiple required>
+      <input type="file" name="watermark" required>
+      <label for="format">Output Format:</label>
+      <select name="format">
+        <option value="jpeg">JPEG</option>
+        <option value="png">PNG</option>
+      </select>
+      <button type="submit">Convert and Apply Watermark</button>
+    </form>
+    <div class="footer">
+      Desenvolvido por Festa Net Brasil
+    </div>
+  </div>
+</body>
+</html>
