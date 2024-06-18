@@ -1,1 +1,0 @@
-touch public/.gitkeep uploads/.gitkeep processed/.gitkeep
