@@ -20,6 +20,8 @@ const uploadFields = upload.fields([
 
 app.post('/upload', uploadFields, async (req, res) => {
   try {
+    console.log('Recebendo requisição para /upload');
+    console.log('Arquivos recebidos:', req.files);
     const watermarkFile = req.files['watermark'][0].path;
     const outputFormat = req.body.format || 'jpeg';
     const zip = archiver('zip');
@@ -27,7 +29,6 @@ app.post('/upload', uploadFields, async (req, res) => {
     res.attachment('images.zip');
     zip.pipe(res);
 
-    // Certifique-se de que a pasta '/tmp/processed' exista
     if (!fs.existsSync('/tmp/processed')) {
       fs.mkdirSync('/tmp/processed');
     }
@@ -57,7 +58,6 @@ app.post('/upload', uploadFields, async (req, res) => {
       fs.unlink(watermarkFile, (err) => {
         if (err) console.error(`Failed to delete temp watermark file: ${err}`);
       });
-      // Delete processed files after zip finalization
       for (const outputPath of processedFiles) {
         fs.unlink(outputPath, (err) => {
           if (err) console.error(`Failed to delete processed file: ${err}`);
@@ -65,6 +65,7 @@ app.post('/upload', uploadFields, async (req, res) => {
       }
     });
   } catch (error) {
+    console.error('Erro ao processar imagens:', error);
     res.status(500).send('An error occurred while processing the images.');
   }
 });
