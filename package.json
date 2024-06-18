@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 {
   "name": "meu-conversor-de-imagens",
   "version": "1.0.0",
@@ -11,23 +10,7 @@
     "archiver": "^5.3.0",
     "express": "^4.17.1",
     "multer": "^1.4.3",
-    "sharp": "^0.29.1"
+    "sharp": "^0.29.1",
+    "serverless-http": "^2.7.0"
   }
 }
-=======
-{
-  "name": "meu-conversor-de-imagens",
-  "version": "1.0.0",
-  "description": "",
-  "main": "server.js",
-  "scripts": {
-    "start": "node server.js"
-  },
-  "dependencies": {
-    "archiver": "^5.3.0",
-    "express": "^4.17.1",
-    "multer": "^1.4.3",
-    "sharp": "^0.29.1"
-  }
-}
->>>>>>> bfddf02 (Atualizar repositório com todos os arquivos e pastas funcionando corretamente)
