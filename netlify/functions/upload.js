@@ -37,6 +37,7 @@ app.post('/upload', uploadFields, async (req, res) => {
 
     for (const file of req.files['images']) {
       const outputPath = path.join('/tmp/processed', `${path.parse(file.originalname).name}.${outputFormat}`);
+      console.log(`Processando arquivo: ${file.path} -> ${outputPath}`);
       await sharp(file.path)
         .resize({ width: 1984, height: 1100 })
         .composite([{ input: watermarkFile, gravity: 'center', blend: 'over' }])
@@ -50,6 +51,7 @@ app.post('/upload', uploadFields, async (req, res) => {
     zip.finalize();
 
     zip.on('end', () => {
+      console.log('Finalizando zip');
       for (const file of req.files['images']) {
         fs.unlink(file.path, (err) => {
           if (err) console.error(`Failed to delete temp image file: ${err}`);
