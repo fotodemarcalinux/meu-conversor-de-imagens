@@ -4,9 +4,10 @@ const sharp = require('sharp');
 const archiver = require('archiver');
 const fs = require('fs');
 const path = require('path');
+const serverless = require('serverless-http');
 
 const app = express();
-const upload = multer({ dest: 'uploads/' });
+const upload = multer({ dest: '/tmp/uploads/' });  // Use /tmp para Netlify functions
 
 app.use(express.static('public'));
 app.use(express.json());
@@ -19,6 +20,8 @@ const uploadFields = upload.fields([
 
 app.post('/upload', uploadFields, async (req, res) => {
   try {
+    console.log('Recebendo requisição para /upload');
+    console.log('Arquivos recebidos:', req.files);
     const watermarkFile = req.files['watermark'][0].path;
     const outputFormat = req.body.format || 'jpeg';
     const zip = archiver('zip');
@@ -26,15 +29,14 @@ app.post('/upload', uploadFields, async (req, res) => {
     res.attachment('images.zip');
     zip.pipe(res);
 
-    // Certifique-se de que a pasta 'processed' exista
-    if (!fs.existsSync('processed')) {
-      fs.mkdirSync('processed');
+    if (!fs.existsSync('/tmp/processed')) {
+      fs.mkdirSync('/tmp/processed');
     }
 
     const processedFiles = [];
 
     for (const file of req.files['images']) {
-      const outputPath = path.join('processed', `${path.parse(file.originalname).name}.${outputFormat}`);
+      const outputPath = path.join('/tmp/processed', `${path.parse(file.originalname).name}.${outputFormat}`);
       await sharp(file.path)
         .resize({ width: 1984, height: 1100 })
         .composite([{ input: watermarkFile, gravity: 'center', blend: 'over' }])
@@ -56,7 +58,6 @@ app.post('/upload', uploadFields, async (req, res) => {
       fs.unlink(watermarkFile, (err) => {
         if (err) console.error(`Failed to delete temp watermark file: ${err}`);
       });
-      // Delete processed files after zip finalization
       for (const outputPath of processedFiles) {
         fs.unlink(outputPath, (err) => {
           if (err) console.error(`Failed to delete processed file: ${err}`);
@@ -64,8 +65,15 @@ app.post('/upload', uploadFields, async (req, res) => {
       }
     });
   } catch (error) {
+    console.error('Erro ao processar imagens:', error);
     res.status(500).send('An error occurred while processing the images.');
   }
 });
 
-app.listen(3000, () => console.log('Server started on port 3000'));
+// Para rodar localmente
+if (process.env.NODE_ENV !== 'production') {
+  app.listen(3000, () => console.log('Server started on port 3000'));
+}
+
+// Exportar como handler para Netlify
+module.exports.handler = serverless(app);
