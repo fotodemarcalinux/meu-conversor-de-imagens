@@ -2,40 +2,22 @@ const express = require('express');
 const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
+const uploadController = require('./src/controllers/uploadController');
 
 const app = express();
 const port = process.env.PORT || 3000;
 
 // Configuração do Multer para upload de arquivos
-const upload = multer({ dest: '/tmp/uploads/' });
+const upload = multer({ dest: 'uploads/' });
 
 // Middleware para servir arquivos estáticos
-app.use(express.static('public'));
+app.use(express.static(path.join(__dirname, 'public')));
 
 // Rota para upload de arquivos
 app.post('/upload', upload.fields([
   { name: 'images', maxCount: 10 },
   { name: 'watermark', maxCount: 1 }
-]), (req, res) => {
-  if (!req.files) {
-    return res.status(400).send('Nenhum arquivo foi enviado.');
-  }
-
-  const files = req.files;
-
-  console.log('Arquivos recebidos:', files);
-  
-  // Exemplo de manipulação dos arquivos recebidos
-  files['images'].forEach(file => {
-    console.log(`Imagem recebida: ${file.originalname}`);
-  });
-
-  if (files['watermark']) {
-    console.log(`Marca d'água recebida: ${files['watermark'][0].originalname}`);
-  }
-
-  res.send('Upload concluído com sucesso.');
-});
+]), uploadController.handleUpload);
 
 // Rota principal
 app.get('/', (req, res) => {
